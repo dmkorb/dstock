@@ -1,0 +1,46 @@
+User usr
+{
+    created_at
+    name
+    email
+    hash
+    salt
+}
+
+Portfolio prt
+{
+    name
+    holdings: []
+}
+
+Holdings hld
+{
+    symbol
+    name
+    quantity
+    amount
+    trades: []
+}
+
+Trade trd
+{
+    symbol
+    name
+    date
+    quantity
+    unit_price
+    amount
+    brokerage
+    type (BUY/SELL)
+    portfolio_id
+}
+
+POST /portfolio
+GET /portfolio/:id/trades
+GET /portfolio/:id/reports
+
+POST /trade
+
+
+/products?name=stock
+/price?minDate&maxDate&symbol=TSLA
