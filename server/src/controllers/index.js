@@ -1,5 +1,2 @@
 export * as portfolioController from './portfolio.controller.js';
-
-// export {
-//     portfolioController
-// }
+export * as tradeController from './trade.controller.js';

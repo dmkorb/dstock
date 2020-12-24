@@ -10,4 +10,4 @@ const handleAxiosError = (error) => {
     throw error;
 }
 
-module.exports = handleAxiosError;
+export default handleAxiosError;

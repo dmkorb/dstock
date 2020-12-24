@@ -1,6 +1,6 @@
 import express from 'express';
-import { portfolioController } from '../../controllers/index.js';
-import { portfolioValidator } from '../../validators/index.js';
+import { portfolioController, tradeController } from '../../controllers/index.js';
+import { portfolioValidator, tradeValidator } from '../../validators/index.js';
 import validate from '../../middleware/validate.js';
 
 const router = express.Router();
@@ -11,5 +11,10 @@ router.post('/portfolios', validate(portfolioValidator.createPortfolio), portfol
 router.get('/portfolios/:id', validate(portfolioValidator.getPortfolio), portfolioController.getPortfolio);
 router.put('/portfolios/:id', validate(portfolioValidator.updatePortfolio), portfolioController.updatePortfolio);
 router.delete('/portfolios/:id', validate(portfolioValidator.removePortfolio), portfolioController.removePortfolio);
+
+router.get('/trades', validate(tradeValidator.getTrades), tradeController.getTrades);
+router.post('/trades', validate(tradeValidator.createTrade), tradeController.createTrade);
+router.put('/trades/:id', validate(tradeValidator.updateTrade), tradeController.updateTrade);
+router.delete('/trades/:id', validate(tradeValidator.removeTrade), tradeController.removeTrade);
 
 export default router;

@@ -1,9 +1,6 @@
-import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync.js';
 import * as portfoliosService from '../services/portfolios.service.js';
-import { TODO } from '../utils/index.js';
-
-// const TODO = catchAsync(async (req, res) => { res.status(httpStatus.OK).send({ message: 'TODO' }) })
+import * as holdingsService from '../services/holdings.service.js';
 
 const getPortfolios = catchAsync(async (req, res) => {
     const data = await portfoliosService.getPortfolios();

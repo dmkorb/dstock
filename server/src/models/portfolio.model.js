@@ -7,12 +7,15 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     default: () => getIdWithPrefix('prt')
   },
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
   name: {
     type: String,
     trim: true,
     required: true
   },
-  holdings: []
 })
 
 portfolioSchema.plugin(toJSON)

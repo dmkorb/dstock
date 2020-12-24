@@ -10,6 +10,10 @@ User usr
 Portfolio prt
 {
     name
+    //total_equity
+    //amount_invested
+    //performance
+    //first_investment
     holdings: []
 }
 
@@ -19,6 +23,10 @@ Holdings hld
     name
     quantity
     amount
+    total_equity
+    amount_invested
+    performance
+    first_investment
     trades: []
 }
 
@@ -32,6 +40,7 @@ Trade trd
     amount
     brokerage
     type (BUY/SELL)
+    broker
     portfolio_id
 }
 
@@ -42,5 +51,7 @@ GET /portfolio/:id/reports
 POST /trade
 
 
-/products?name=stock
-/price?minDate&maxDate&symbol=TSLA
+/products?type=stock
+/quote?minDate&maxDate&symbol=TSLA
+
+GET /brokers
