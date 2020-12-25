@@ -29,10 +29,6 @@ const holdingSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  // total_equity: {
-  //   type: Number,
-  //   default: 0
-  // },
   amount_invested: {
     type: Number,
     default: 0
@@ -41,17 +37,15 @@ const holdingSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  // performance: {
-  //   type: Number,
-  //   default: 0
-  // },
   first_investment: {
-    type: Date,
+    type: String,
     required: true
   },
   portfolio_id: {
     type: String
   },
+  positions: [],
+  positions_updated_at: Date,
 })
 
 holdingSchema.plugin(toJSON)

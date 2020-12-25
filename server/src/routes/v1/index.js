@@ -1,5 +1,5 @@
 import express from 'express';
-import { portfolioController, tradeController } from '../../controllers/index.js';
+import { portfolioController, tradeController, holdingsController } from '../../controllers/index.js';
 import { portfolioValidator, tradeValidator } from '../../validators/index.js';
 import validate from '../../middleware/validate.js';
 
@@ -11,6 +11,10 @@ router.post('/portfolios', validate(portfolioValidator.createPortfolio), portfol
 router.get('/portfolios/:id', validate(portfolioValidator.getPortfolio), portfolioController.getPortfolio);
 router.put('/portfolios/:id', validate(portfolioValidator.updatePortfolio), portfolioController.updatePortfolio);
 router.delete('/portfolios/:id', validate(portfolioValidator.removePortfolio), portfolioController.removePortfolio);
+
+router.get('/holdings', holdingsController.getHoldings);
+router.get('/holdings/:id', holdingsController.getHolding);
+router.get('/holdings/:id/profit', holdingsController.getHoldingProfit);
 
 router.get('/trades', validate(tradeValidator.getTrades), tradeController.getTrades);
 router.post('/trades', validate(tradeValidator.createTrade), tradeController.createTrade);
