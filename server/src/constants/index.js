@@ -15,3 +15,8 @@ export const EVENTS = {
     HOLDING_POSITIONS_UPDATED: 'holding_positions_updated',
   }
 }
+
+export const USER_ROLES = {
+  USER: 'user',
+  ADMIN: 'admin',
+}

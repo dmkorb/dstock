@@ -2,7 +2,7 @@ import httpStatus from 'http-status';
 import logger from '../config/logger.js';
 import ApiError from "../utils/ApiError.js";
 import { Portfolio } from "../models/index.js"
-import { EVENTS } from '../../constants/index.js';
+import { EVENTS } from '../constants/index.js';
 import * as holdingsService from "./holdings.service.js";
 import { getEventManager} from '../libs/event.manager.js';
 import { calculateGainAndPerformance } from '../utils/calculators.js';

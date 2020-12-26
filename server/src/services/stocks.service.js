@@ -1,5 +1,5 @@
 import logger from '../config/logger.js';
-import { EVENTS } from '../../constants/index.js';
+import { EVENTS } from '../constants/index.js';
 import { Stock } from '../models/index.js'
 import * as provider from './alphavantage.service.js';
 import { getEventManager} from '../libs/event.manager.js';
@@ -20,8 +20,10 @@ const getStockBySymbol = async (symbol) => {
 }
 
 const getCurrentPrice = async (symbol) => {
+  // TODO: set update threshold; return our internal price if less than threshold
   const price = await provider.getCurrentPrice(symbol)
   logger.info(`GET current price for ${symbol}: ${price}`)
+  // update price
   return price;
 }
 

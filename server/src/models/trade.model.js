@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { getIdWithPrefix } from './plugins/nanoid.js';
 import { toJSON } from './plugins/toJSON.js';
-import { TRADE_TYPES } from '../../constants/index.js';
+import { TRADE_TYPES } from '../constants/index.js';
 
 const tradeSchema = new mongoose.Schema({
   _id: {

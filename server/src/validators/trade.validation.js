@@ -1,5 +1,5 @@
 import Joi from '@hapi/joi';
-import { TRADE_TYPES} from '../../constants/index.js';
+// import { TRADE_TYPES} from '../constants/index.js';
 
 const getTrades = {
 

@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { EVENTS } from '../../constants/index.js';
+import { EVENTS } from '../constants/index.js';
 import { getEventManager} from '../libs/event.manager.js';
 import logger from '../config/logger.js';
 import { Holding } from '../models/index.js';

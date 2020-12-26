@@ -13,6 +13,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
@@ -22,12 +23,15 @@
     "helmet": "^4.2.0",
     "http-status": "^1.5.0",
     "ioredis": "^4.19.4",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "mongoose": "^5.11.8",
     "morgan": "^1.10.0",
     "nanoid": "^3.1.20",
     "nodejs-event-manager": "^1.1.2",
     "passport": "^0.4.1",
+    "validator": "^13.5.2",
     "winston": "^3.3.3",
     "xss-clean": "^0.1.1"
   },

@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import { getIdWithPrefix } from './plugins/nanoid.js';
 import { toJSON } from './plugins/toJSON.js';
 
+// const positionSchema
+
 const holdingSchema = new mongoose.Schema({
   _id: {
     type: String,
