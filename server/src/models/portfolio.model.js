@@ -16,6 +16,11 @@ const portfolioSchema = new mongoose.Schema({
     trim: true,
     required: true
   },
+  user_id: {
+    type: String,
+    required: true,
+    ref: 'User'
+  },
   positions: [],
   positions_updated_at: Date
 })

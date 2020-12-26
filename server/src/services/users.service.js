@@ -22,8 +22,8 @@ const createUser = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter, options) => {
-  const limit = options.limit || 50;
-  const offset = options.offset || 0;
+  const limit = Number(options.limit || 50);
+  const offset = Number(options.offset || 0);
   const total_count = await User.countDocuments(filter);
   const users = await User.find(filter).sort({ created_at: -1 }).limit(limit).skip(offset)
   const count = users.length;

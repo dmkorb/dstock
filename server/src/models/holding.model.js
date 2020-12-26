@@ -46,6 +46,11 @@ const holdingSchema = new mongoose.Schema({
   portfolio_id: {
     type: String
   },
+  user_id: {
+    type: String,
+    required: true,
+    ref: 'User'
+  },
   positions: [],
   positions_updated_at: Date,
 })

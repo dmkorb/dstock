@@ -10,6 +10,7 @@ import config from "./config/config.js";
 import morgan from "./config/morgan.js";
 import routesV1 from "./routes/v1/index.js";
 import routesAdmin from "./routes/admin/index.js";
+import { jwtStrategy } from './config/passport.js';
 import { errorConverter, errorHandler } from "./middleware/error.js";
 import ApiError from "./utils/ApiError.js";
 
@@ -43,7 +44,7 @@ app.options("*", cors());
 
 // jwt authentication
 app.use(passport.initialize());
-// passport.use('jwt', jwtStrategy);
+passport.use('jwt', jwtStrategy);
 
 // limit repeated failed requests to auth endpoints
 // if (config.env === 'production') {

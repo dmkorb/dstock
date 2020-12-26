@@ -7,21 +7,35 @@ import { getTrades } from './trades.service.js';
 import * as stocks from './stocks.service.js';
 import { calculateGainAndPerformance } from '../utils/calculators.js';
 import { isDateOlderThanHours } from '../utils/time.js';
+import ApiError from '../utils/ApiError.js';
 
 const em = getEventManager();
 
 const doesHoldingExist = async (holdingId) => {
   const exists = await Holding.exists({ _id: holdingId });
-  if (!exists) throw new ApiError(httpStatus.NOT_FOUND, `Holding not found`);
+  if (!exists) throw new ApiError(httpStatus.NOT_FOUND, `Holding s not found`);
+}
+
+const doesHoldingBelongsToUser = async (holdingId, user_id) => {
+  await doesHoldingExist(holdingId);
+  const exists = await Holding.exists({ _id: holdingId, user_id });
+  if (!exists) throw new ApiError(httpStatus.FORBIDDEN, `Holding doesn't belong to this user`);
 }
 
 const getHoldings = async (filter = {}, options = {}) => {
-  const limit = options.limit || 50;
-  const offset = options.offset || 0;
+  const limit = Number(options.limit || 50);
+  const offset = Number(options.offset || 0);
   const total_count = await Holding.countDocuments(filter);
-  const holdings = await Holding.find(filter).sort({ created_at: -1 }).limit(limit).skip(offset)
+  const holdings = await Holding
+    .find(filter)
+    .sort({ created_at: -1 })
+    .limit(limit)
+    .skip(offset);
+
+  const performance = await Promise.all(holdings.map(holding => getHoldingPerformance(holding)))
+  
   const count = holdings.length;
-  return { count, limit, offset, total_count, holdings };
+  return { count, limit, offset, total_count, holdings: performance };
 }
 
 const getHoldingPerformance = async (holding) => {
@@ -140,6 +154,8 @@ const updateHoldingPosition = async (holdingId) => {
 }
 
 export {
+  doesHoldingBelongsToUser,
+  
   getHoldings,
   getHoldingById,
   getHoldingTrades,
@@ -169,6 +185,7 @@ const onTradeCreated = async (data) => {
       holding = await createHolding({
         name: trade.name,
         symbol: trade.symbol,
+        user_id: trade.user_id,
         first_investment: trade.date,
         portfolio_id: trade.portfolio_id,
       })

@@ -53,7 +53,12 @@ const tradeSchema = new mongoose.Schema({
   portfolio_id: {
     type: String,
     ref: 'Portfolio'
-  }
+  },
+  user_id: {
+    type: String,
+    required: true,
+    ref: 'User'
+  },
 })
 
 tradeSchema.plugin(toJSON)

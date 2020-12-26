@@ -9,13 +9,20 @@ import { calculateGainAndPerformance } from '../utils/calculators.js';
 
 const em = getEventManager();
 
-const portfolioExists = async (portfolioId) => {
+const doesPortfolioExist = async (portfolioId) => {
   const exists = await Portfolio.exists({ _id: portfolioId });
   if (!exists) throw new ApiError(httpStatus.NOT_FOUND, `Portfolio not found`);
 }
+
+const doesPortfolioBelongToUser = async (portfolioId, user_id) => {
+  await doesPortfolioExist(portfolioId);
+  const exists = await Portfolio.exists({ _id: portfolioId, user_id });
+  if (!exists) throw new ApiError(httpStatus.FORBIDDEN, `Portfolio doesn't belong to this user`);
+}
+
 const getPortfolios = async (filter = {}, options = {}) => {
-  const limit = options.limit || 50;
-  const offset = options.offset || 0;
+  const limit = Number(options.limit || 50);
+  const offset = Number(options.offset || 0);
   const total_count = await Portfolio.countDocuments(filter);
   const portfolios = await Portfolio.find(filter).sort({ created_at: -1 }).limit(limit).skip(offset)
   const count = portfolios.length;
@@ -53,6 +60,8 @@ const getPortfolioById = async (portfolioId) => {
     equity,
     gains,
     performance,
+    amount_invested,
+    amount_withdrawn,
     first_investment,
     holdings
   }
@@ -110,18 +119,19 @@ const createPortfolio = async (data) => {
 }
 
 const updatePortfolioById = async (portfolioId, data) => {
-  await portfolioExists(portfolioId)
+  await doesPortfolioExist(portfolioId)
   const portfolio = await Portfolio.findByIdAndUpdate(portfolioId, { $set: data }, { new: true });
   return portfolio;
 }
 
 const removePortfolioById = async (portfolioId) => {
-  await portfolioExists(portfolioId)
+  await doesPortfolioExist(portfolioId)
   await Portfolio.findByIdAndDelete(portfolioId);
 }
 
 export {
-  portfolioExists,
+  doesPortfolioExist,
+  doesPortfolioBelongToUser,
   getPortfolios,
   getPortfolioById,
   createPortfolio,

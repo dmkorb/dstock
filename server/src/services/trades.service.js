@@ -14,10 +14,10 @@ const tradeExists = async (tradeId) => {
 }
 
 const getTrades = async (filter = {}, options = {}) => {
-  const limit = options.limit || 50;
-  const offset = options.offset || 0;
+  const limit = Number(options.limit || 50);
+  const offset = Number(options.offset || 0);
   const total_count = await Trade.countDocuments(filter);
-  const trades = await Trade.find(filter).sort({ date: 1 }).limit(limit).skip(offset)
+  const trades = await Trade.find(filter).sort({ date: -1 }).limit(limit).skip(offset)
   const count = trades.length;
   return { count, limit, offset, total_count, trades };
 }
