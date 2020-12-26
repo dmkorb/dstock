@@ -1,0 +1,9 @@
+
+* Time series data are only available for days where the market was open.
+And the daily position is calculated iterating over the time series data.
+Therefore, If a trade is created on a holiday, the holding position is not updated with the shares of this particular trade.
+
+* SELL trade: 
+There's no control over the amount of shares the user sells. 
+That might lead to negative shares amount if he tries to sell before buying or a quantity greater than the current position.
+

@@ -1,7 +1,13 @@
 import httpStatus from 'http-status';
-import { Portfolio } from "../models/index.js"
+import logger from '../config/logger.js';
 import ApiError from "../utils/ApiError.js";
+import { Portfolio } from "../models/index.js"
+import { EVENTS } from '../../constants/index.js';
 import * as holdingsService from "./holdings.service.js";
+import { getEventManager} from '../libs/event.manager.js';
+import { calculateGainAndPerformance } from '../utils/calculators.js';
+
+const em = getEventManager();
 
 const portfolioExists = async (portfolioId) => {
   const exists = await Portfolio.exists({ _id: portfolioId });
@@ -54,6 +60,50 @@ const getPortfolioById = async (portfolioId) => {
   return response;
 }
 
+const getPortfolioPositions = async (portfolioId) => {
+  const portfolio = await getPortfolioById(portfolioId);
+  const holdings = await holdingsService.getHoldingsForPortfolioId(portfolioId);
+
+  const portflioPositions = []
+
+  for (let hld of holdings) {
+    const holdingPositions = await holdingsService.getUpdatedHoldingPositions(hld.id);
+
+    console.log(`Holding ${hld.symbol} has ${holdingPositions.length} positions`)
+    
+    holdingPositions.forEach(pos => {
+      let dailyPrtPosition = portflioPositions.find(d => d.date === pos.date);
+      
+      if (dailyPrtPosition) {
+        dailyPrtPosition.equity += pos.equity;
+        dailyPrtPosition.invested += pos.invested;
+        dailyPrtPosition.withdrawn += pos.withdrawn;
+      } else {
+        dailyPrtPosition = {
+          date: pos.date,
+          equity: pos.equity,
+          invested: pos.invested,
+          withdrawn: pos.withdrawn
+        }
+      } 
+
+      const { gains, performance } = calculateGainAndPerformance(
+        dailyPrtPosition.equity, 
+        dailyPrtPosition.invested,
+        dailyPrtPosition.withdrawn)
+      
+      dailyPrtPosition.gains = gains;
+      dailyPrtPosition.performance = performance;
+
+      portflioPositions.push(dailyPrtPosition)
+    })
+  }
+
+  let positions = portflioPositions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  return positions;
+}
+
 const createPortfolio = async (data) => {
   const portfolio = await Portfolio.create(data);
   return portfolio;
@@ -76,5 +126,60 @@ export {
   getPortfolioById,
   createPortfolio,
   updatePortfolioById,
-  removePortfolioById
+  removePortfolioById,
+  getPortfolioPositions
 }
+
+/**
+ * Event handlers
+ */
+// const onHoldingPositionsUpdated = async ({ holding }) => {
+//   try {
+//     logger.info(`Portfolios onHoldingPositionsUpdated handler - holding ID ${holding.id}`);
+//     const portfolio = await getPortfolioById(holding.portfolio_id);
+//     const holdings = await holdingsService.getHoldingsForPortfolioId(holding.portfolio_id);
+//     console.log(`Found ${holdings.length} holdings for portfolio ${holding.portfolio_id}`);
+
+//     const portoflioPositions = []
+//     for (let hld of holdings) {
+//       hld.positions.forEach(pos => {
+//         let dailyPrtPosition = portfolio.positions.find(d => d.date === pos.date);
+//         console.log('dailyPrtPosition before', dailyPrtPosition);
+//         if (dailyPrtPosition) {
+//           dailyPrtPosition.equity += pos.equity;
+//           dailyPrtPosition.invested += pos.invested;
+//           dailyPrtPosition.withdrawn += pos.withdrawn;
+//         } else {
+//           dailyPrtPosition = {
+//             date: pos.date,
+//             equity: pos.equity,
+//             invested: pos.invested,
+//             withdrawn: pos.withdrawn
+//           }
+//         } 
+
+//         const { gains, performance } = calculateGainAndPerformance(
+//           dailyPrtPosition.equity, 
+//           dailyPrtPosition.invested,
+//           dailyPrtPosition.withdrawn)
+        
+//         dailyPrtPosition.gains = gains;
+//         dailyPrtPosition.performance = performance;
+
+//         console.log('dailyPrtPosition after', dailyPrtPosition);
+
+//         portoflioPositions.push(dailyPrtPosition)
+//       })
+//     }
+
+//     // console.log('Portfolio positions:', portoflioPositions)
+//     await updatePortfolioById(portfolio.id, { positions: portoflioPositions })
+//   } catch (err) {
+//     logger.error(err);
+//   }
+// }
+
+/**
+ * Event listners
+ */
+// em.on(EVENTS.HOLDING.HOLDING_POSITIONS_UPDATED, onHoldingPositionsUpdated)

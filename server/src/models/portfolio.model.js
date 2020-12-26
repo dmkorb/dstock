@@ -16,6 +16,8 @@ const portfolioSchema = new mongoose.Schema({
     trim: true,
     required: true
   },
+  positions: [],
+  positions_updated_at: Date
 })
 
 portfolioSchema.plugin(toJSON)

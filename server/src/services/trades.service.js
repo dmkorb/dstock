@@ -5,6 +5,7 @@ import ApiError from "../utils/ApiError.js";
 import logger from '../config/logger.js';
 import { getEventManager } from '../libs/event.manager.js';
 import * as stocks from './stocks.service.js';
+import { isDateWeekend } from '../utils/time.js';
 
 const em = getEventManager();
 
@@ -27,7 +28,7 @@ const getTradesForPortfolioId = async (portfolio_id) => {
   return trades;
 }
 
-const createTrade = async (data) => {
+const createTrade = async (data) => {  
   const stock = await stocks.getStockBySymbol(data.symbol);
 
   const value = Math.abs(data.quantity * data.unit_price);

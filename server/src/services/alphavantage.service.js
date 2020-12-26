@@ -91,6 +91,7 @@ const getDailyTimeSeries = async (symbol) => {
   const startTime = new Date();
   const response = await axios.get(queryUrl).then(r => r.data).catch(handleAxiosError)
   const timeSeries = response['Time Series (Daily)'];
+  if (!timeSeries) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Error getting time series for stock ${symbol}`);
 
   logger.info(`Request for daily time series for ${symbol} done. Found ${Object.keys(timeSeries).length} prices. Took ${new Date() - startTime}ms`);
 

@@ -9,6 +9,7 @@ const router = express.Router();
 router.get('/portfolios', validate(portfolioValidator.getPortfolios), portfolioController.getPortfolios);
 router.post('/portfolios', validate(portfolioValidator.createPortfolio), portfolioController.createPortfolio);
 router.get('/portfolios/:id', validate(portfolioValidator.getPortfolio), portfolioController.getPortfolio);
+router.get('/portfolios/:id/positions', validate(portfolioValidator.getPortfolio), portfolioController.getPortfolioPosition);
 router.put('/portfolios/:id', validate(portfolioValidator.updatePortfolio), portfolioController.updatePortfolio);
 router.delete('/portfolios/:id', validate(portfolioValidator.removePortfolio), portfolioController.removePortfolio);
 

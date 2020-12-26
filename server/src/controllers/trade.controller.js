@@ -3,6 +3,8 @@ import catchAsync from '../utils/catchAsync.js';
 import { TODO } from '../utils/index.js';
 import * as tradeService from '../services/trades.service.js';
 import * as portfolioService from '../services/portfolios.service.js';
+import { isDateWeekend } from '../utils/time.js';
+import ApiError from '../utils/ApiError.js';
 
 const getTrades = catchAsync(async (req, res) => {
   const trades = await tradeService.getTrades();
@@ -11,6 +13,12 @@ const getTrades = catchAsync(async (req, res) => {
 
 const createTrade = catchAsync(async (req, res) => {
   await portfolioService.portfolioExists(req.body.portfolio_id)
+  
+  const { date } = req.body;
+  if (isDateWeekend(date)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, `Date is on weekend`)
+  }
+
   const trade = await tradeService.createTrade(req.body);
   res.status(httpStatus.CREATED).send(trade);
 });

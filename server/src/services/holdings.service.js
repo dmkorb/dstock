@@ -45,8 +45,6 @@ const getHoldingById = async (holdingId) => {
     holding = await updateHoldingPosition(holding.id);
   }
 
-  // const holdingPerformance = await getHoldingPerformance(holding);
-  // return {...holdingPerformance, positions};
   return getHoldingPerformance(holding);
 }
 
@@ -77,7 +75,7 @@ const createHolding = async (data) => {
   return holding;
 }
 
-const updateHolding = async (holdingId, data) => {
+const updateHoldingById = async (holdingId, data) => {
   await doesHoldingExist(holdingId);
   const holding = await Holding.findByIdAndUpdate(holdingId, { $set: data }, { new: true });
   logger.info(`Holding updated: ID ${holding.id}`);
@@ -85,12 +83,14 @@ const updateHolding = async (holdingId, data) => {
   return holding;
 }
 
-const updateHoldingPosition = async (holdingId) => {
+const getUpdatedHoldingPositions = async (holdingId) => {
   let holding = await Holding.findById(holdingId);
   const positions = [];
   const trades = await getHoldingTrades(holdingId);
   const ts = await stocks.getTimeSeries(holding.symbol, { start: holding.first_investment })
   
+  logger.info(`Updating holding position for holding ${holding.id} (${holding.symbol})`);
+
   let position = 0;
   let invested = 0;
   let withdrawn = 0;
@@ -109,19 +109,33 @@ const updateHoldingPosition = async (holdingId) => {
     const equity = price * position;
     const { gains, performance } = calculateGainAndPerformance(equity, invested, withdrawn);
     
-    console.log(`${t.date} position ${position} price ${t.adjusted_close} equity ${t.adjusted_close * position}`)
+    logger.info(`Position: ${t.date} ${position} shares of ${t.symbol} at $${t.adjusted_close}. Equity ${t.adjusted_close * position}`)
+
     positions.push({
       date,
       equity,
       price,
       position,
       gains,
+      invested,
+      withdrawn,
       performance
     })
   })
 
-  holding = await Holding.findByIdAndUpdate(holdingId, { $set: { positions, positions_updated_at: new Date() } }, { new: true });
+  logger.info(`Returning ${positions.length} positions of ${holding.symbol}`)
   
+  return positions;
+}
+
+const updateHoldingPosition = async (holdingId) => {
+  const positions = await getUpdatedHoldingPositions(holdingId);
+  const holding = await updateHoldingById(holdingId, { 
+      positions,
+      positions_updated_at: new Date()
+    });
+  logger.info(`Holding positions updated: ID ${holding.id}`);
+  em.emit(EVENTS.HOLDING.HOLDING_POSITIONS_UPDATED, { holding });
   return holding;
 }
 
@@ -132,10 +146,10 @@ export {
   getHoldingForSymbol,
   getHoldingsForPortfolioId,
   
-  updateHoldingPosition,
+  getUpdatedHoldingPositions,
 
   createHolding,
-  updateHolding
+  updateHoldingById
 }
 
 /**
@@ -161,22 +175,33 @@ const onTradeCreated = async (data) => {
     }
 
     // Update position
-    holding.shares += trade.quantity;
+    let shares = holding.shares;
+    let amount_invested = holding.amount_invested;
+    let amount_withdrawn = holding.amount_withdrawn;
+    let first_investment = holding.first_investment;
+
+    shares += trade.quantity;
     if (trade.total_amount > 0) {
-      holding.amount_invested += trade.total_amount;
+      amount_invested += trade.total_amount;
     } else {
-      holding.amount_withdrawn += Math.abs(trade.total_amount);
+      amount_withdrawn += Math.abs(trade.total_amount);
     }
     
     // Update first investment date if older 
-    if (new Date(trade.date).getTime() < new Date(holding.first_investment).getTime()) {
-      holding.first_investment = trade.date;
+    if (new Date(trade.date).getTime() < new Date(first_investment).getTime()) {
+      first_investment = trade.date;
     }
 
-    await holding.save();
+    // update holding
+    await updateHoldingById(holding.id, { 
+      shares, 
+      amount_invested, 
+      amount_withdrawn, 
+      first_investment,
+    });
 
-    // recalculate position
-    updateHoldingPosition(holding.id).catch(() => {})
+    // recalculate daily positions
+    await updateHoldingPosition(holding.id)
 
   } catch (err) {
     logger.error(err);

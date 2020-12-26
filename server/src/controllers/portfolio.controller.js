@@ -12,6 +12,12 @@ const getPortfolio = catchAsync(async (req, res) => {
     res.send(portfolio);
 });
 
+const getPortfolioPosition = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const positions = await portfoliosService.getPortfolioPositions(id);
+    res.send({ id, positions });
+})
+
 const createPortfolio = catchAsync(async (req, res) => {
     const portfolio = await portfoliosService.createPortfolio(req.body);
     res.send(portfolio);
@@ -30,6 +36,7 @@ const removePortfolio = catchAsync(async (req, res) => {
 export {
     getPortfolios,
     getPortfolio,
+    getPortfolioPosition,
     createPortfolio,
     updatePortfolio,
     removePortfolio

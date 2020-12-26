@@ -12,6 +12,6 @@ export const EVENTS = {
   HOLDING: {
     HOLDING_CREATED: 'holding_created',
     HOLDING_UPDATED: 'holding_updated',
-    
+    HOLDING_POSITIONS_UPDATED: 'holding_positions_updated',
   }
 }

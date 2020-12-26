@@ -4,6 +4,11 @@ function isValidDate(value) {
   return !isNaN(dateWrapper.getDate());
 }
 
+export const isDateWeekend = (date) => {
+  const day = new Date(date).getDay();
+  return day === 0 || day === 6;
+}
+
 export const isDateOlderThanHours = (date, hours) => {
   if (!isValidDate(date)) return false;
   console.log(new Date() - date, (1000 * 60 * 60 * hours), (new Date() - date) > (1000 * 60 * 60 * hours))
