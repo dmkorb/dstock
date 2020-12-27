@@ -1,0 +1,88 @@
+// Here you can add other styles
+$brand-green: #95c753; // 149 199  83
+$brand-white: #f0f0f0; // 240 240 240
+$brand-black: #161616; //  22  22  22
+$brand-grey-1: #323232;//  50  50  50
+$brand-grey-2: #505050;//  80  80  80
+
+$primary:       $brand-green !default;
+
+:root body {
+    background-color: $brand-white;
+}
+
+.bg-brand-green {
+    background: $brand-green;
+}
+
+.app-header {
+    background-color: $brand-black;
+}
+
+a {
+    color: $brand-green;
+}
+// a:hover {
+//     color: $brand-white;
+// }
+
+// SIDEBAR
+.sidebar {
+    background: $brand-black;
+}
+
+.sidebar .nav-link.active {
+    color: $brand-green;
+    background: $brand-grey-1;
+}
+.sidebar .nav-link.active .nav-icon {
+    color: $brand-green;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: $brand-green;
+}
+
+.sidebar-minimized .sidebar .nav-link:hover {
+    width: 250px;
+    background: $brand-green;
+}
+
+.sidebar-minimized .sidebar .nav-item:hover > .nav-link {
+    background: $brand-green;
+}
+
+.sidebar-minimized .sidebar .nav-item:hover .nav-link.active {
+    background: $brand-green;
+}
+
+.breadcrumb {
+    background: $brand-grey-1;
+}
+
+// NAVBAR
+.navbar-nav .nav-link {
+    color: $brand-white;
+}
+.navbar-nav .nav-link:focus {
+    color: $brand-green;
+}
+.navbar-nav .nav-link:hover {
+    color: #FFF;
+}
+.navbar-nav .nav-link.active {
+    color: $brand-green;
+}
+
+//FORM CONTROL
+.form-control:focus {
+    border-color: $brand-green;
+    box-shadow: 0 0 0 0.2rem rgba(149, 199, 83, 0.25);
+}
+
+
+
+
+
+

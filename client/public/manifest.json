@@ -1,0 +1,15 @@
+{
+  "short_name": "dstock.",
+  "name": "dstock.",
+  "icons": [
+    {
+      "src": "./assets/img/favicon.png",
+      "sizes": "100x100",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#323232",
+  "background_color": "#f1f1f1"
+}
