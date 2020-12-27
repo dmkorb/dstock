@@ -15,7 +15,7 @@ const getTrades = catchAsync(async (req, res) => {
 });
 
 const createTrade = catchAsync(async (req, res) => {
-  await portfolioService.doesPortfolioExist(req.body.portfolio_id)
+  await portfolioService.doesPortfolioBelongToUser(req.body.portfolio_id, req.user.id);
   
   const { date } = req.body;
   if (isDateWeekend(date)) {

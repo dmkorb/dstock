@@ -1,6 +1,10 @@
 import httpStatus from 'http-status';
 import { User } from '../models/index.js';
 import ApiError from '../utils/ApiError.js';
+import { EVENTS } from '../constants/index.js';
+import { getEventManager } from '../libs/event.manager.js';
+
+const em = getEventManager();
 
 /**
  * Create a user
@@ -12,6 +16,7 @@ const createUser = async (userBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   const user = await User.create(userBody);
+  em.emit(EVENTS.USER.USER_CREATED, { user })
   return user;
 };
 
@@ -66,6 +71,7 @@ const updateUserById = async (userId, updateBody) => {
   }
   Object.assign(user, updateBody);
   await user.save();
+  em.emit(EVENTS.USER.USER_UPDATED, { user })
   return user;
 };
 
@@ -79,6 +85,7 @@ const deleteUserById = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
+  em.emit(EVENTS.USER.USER_REMOVED, { user })
   await user.remove();
   return user;
 };

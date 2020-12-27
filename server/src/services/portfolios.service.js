@@ -17,7 +17,10 @@ const doesPortfolioExist = async (portfolioId) => {
 const doesPortfolioBelongToUser = async (portfolioId, user_id) => {
   await doesPortfolioExist(portfolioId);
   const exists = await Portfolio.exists({ _id: portfolioId, user_id });
-  if (!exists) throw new ApiError(httpStatus.FORBIDDEN, `Portfolio doesn't belong to this user`);
+  if (!exists) {
+    logger.error(`Access error: Portfolio ${portfolioId} doesn't belong to user ${user_id}`);
+    throw new ApiError(httpStatus.FORBIDDEN, `Portfolio doesn't belong to this user`);
+  }
 }
 
 const getPortfolios = async (filter = {}, options = {}) => {
@@ -189,7 +192,18 @@ export {
 //   }
 // }
 
+const onUserCreatedEvent = async ({ user }) => {
+  try {
+    logger.info(`Portfolios service - onUserCreatedEvent handler - user ID ${user.id}`);
+    const portfolio = await createPortfolio({name: `${user.name}'s portfolio`, user_id: user.id});
+    logger.info(`Portfolios service - created portfolio ${portfolio.id} for user ${user.name} (${user.id})`);
+  } catch (err) {
+    logger.error(err);
+  }
+}
+
 /**
  * Event listners
  */
 // em.on(EVENTS.HOLDING.HOLDING_POSITIONS_UPDATED, onHoldingPositionsUpdated)
+em.on(EVENTS.USER.USER_CREATED, onUserCreatedEvent)

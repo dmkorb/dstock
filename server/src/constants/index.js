@@ -13,6 +13,11 @@ export const EVENTS = {
     HOLDING_CREATED: 'holding_created',
     HOLDING_UPDATED: 'holding_updated',
     HOLDING_POSITIONS_UPDATED: 'holding_positions_updated',
+  },
+  USER: {
+    USER_CREATED: 'user_created',
+    USER_UPDATED: 'user_updated',
+    USER_REMOVED: 'user_removed',
   }
 }
 

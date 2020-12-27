@@ -19,7 +19,10 @@ const doesHoldingExist = async (holdingId) => {
 const doesHoldingBelongsToUser = async (holdingId, user_id) => {
   await doesHoldingExist(holdingId);
   const exists = await Holding.exists({ _id: holdingId, user_id });
-  if (!exists) throw new ApiError(httpStatus.FORBIDDEN, `Holding doesn't belong to this user`);
+  if (!exists) {
+    logger.error(`Access error: Holding ${holdingId} doesn't belong to user ${user_id}`);
+    throw new ApiError(httpStatus.FORBIDDEN, `Holding doesn't belong to this user`);
+  }
 }
 
 const getHoldings = async (filter = {}, options = {}) => {
@@ -209,13 +212,16 @@ const onTradeCreated = async (data) => {
       first_investment = trade.date;
     }
 
-    // update holding
-    await updateHoldingById(holding.id, { 
+    const dataToUpdate = { 
       shares, 
       amount_invested, 
       amount_withdrawn, 
       first_investment,
-    });
+    }
+
+    logger.info(`Updating holding ${holding.id} with data ${JSON.stringify(dataToUpdate)}`)
+    // update holding
+    await updateHoldingById(holding.id, dataToUpdate);
 
     // recalculate daily positions
     await updateHoldingPosition(holding.id)
