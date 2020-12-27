@@ -5,7 +5,6 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Jumbotron,
   Row,
   Table,
 } from 'reactstrap';
@@ -14,6 +13,7 @@ import { Colors } from '../../constants';
 import { portfoliosService } from '../../services/index'
 import { getCurrencyAmount } from '../../helpers/text';
 import { getNPositions } from '../../helpers/charts';
+import { TradesModal } from '../../containers/TradesModal';
 
 export default class Dashboard extends Component {
   constructor(props) {
@@ -55,7 +55,14 @@ export default class Dashboard extends Component {
 
     return (
       <Card>
-        <CardHeader>Performance</CardHeader>
+        <CardHeader className="justify-center">Performance
+          <div className="card-header-actions">
+            <Button
+              style={{ backgroundColor: Colors.brandRed, color: Colors.brandWhite, fontWeight: 'bold' }}
+              onClick={(e => this.setState({ showModal: true }))}
+            >Add trade</Button>
+          </div>
+        </CardHeader>
         <CardBody>
           <CChartLine
             style={{ height: 400 }}
@@ -85,28 +92,11 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    let { portfolios, positions, loadingPortfolios } = this.state;
+    let { portfolios, showModal, loadingPortfolios } = this.state;
 
     return (
       <div className="animated fadeIn">
-        {/* {!portfolios.length && !loadingPortfolios && <Jumbotron>
-          <h4 className="display-3">Olá!</h4>
-          <p className="lead">Cansado de ter que abrir vários apps diferentes
-            para acompanhar seus gastos e consultar seus saldos? O dstock. vai resolver o seu problema.</p>
-          <hr className="my-2" />
-          <p>Comece adicionando uma conta bancária, e veja a mágica acontecer.</p>
-          <p className="lead">
-            <Button
-              style={{ backgroundColor: Colors.brandGreen }}
-              onClick={(e) => {
-                e.preventDefault();
-                this.props.history.push('accounts/new');
-              }}
-            >Adicionar conta</Button>
-          </p>
-        </Jumbotron>} */}
-
-        {portfolios.map(portfolio => (<>
+        {portfolios.map(portfolio => (<div key={portfolio.id}>
           <h5 className="display-5">{portfolio.name}</h5>
           <Row>
             <Col xs="12" sm="6" lg="3">
@@ -194,10 +184,18 @@ export default class Dashboard extends Component {
               </Card>}
             </Col>
           </Row>
-        </>
+        </div>
         )
 
       )}
+        <TradesModal 
+          show={showModal} 
+          onClose={() => this.setState({ showModal: false })} 
+          onTradeCreated={() => {
+            this.setState({ showModal: false })
+            this.getData()
+          }} 
+        />
       </div>
     );
   }

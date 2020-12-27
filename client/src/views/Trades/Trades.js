@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { tradesService } from '../../services/index'
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -10,6 +11,7 @@ import {
 } from 'reactstrap';
 import { Colors } from '../../constants';
 import { getCurrencyAmount } from '../../helpers/text';
+import { TradesModal } from '../../containers/TradesModal';
 
 const getBadgeColor = (type) => {
   switch (type) {
@@ -39,14 +41,23 @@ export default class Trades extends Component {
   }
 
   render() {
-    const { trades, loading } = this.state;
+    const { trades, loading, showModal } = this.state;
 
     return (
+      <>
       <Row>
         <Col xl={12}>
           {loading && (<><br></br><p>Loading...</p></>)}
           {!!trades?.length && <Card>
-            <CardHeader>Trades</CardHeader>
+              <CardHeader>
+                Trades
+              <div className="card-header-actions">
+                  <Button
+                    style={{ backgroundColor: Colors.brandRed, color: Colors.brandWhite, fontWeight: 'bold' }}
+                    onClick={(e => this.setState({ showModal: true }))}
+                  >Add trade</Button>
+                </div>
+              </CardHeader>
             <CardBody>
               <Table responsive hover>
                 <thead>
@@ -87,6 +98,15 @@ export default class Trades extends Component {
           </Card>}
         </Col>
       </Row>
+      <TradesModal
+          show={showModal} 
+          onClose={() => this.setState({ showModal: false })} 
+          onTradeCreated={() => {
+            this.setState({ showModal: false })
+            this.getData()
+          }} 
+        />
+      </>
     )
   }
 

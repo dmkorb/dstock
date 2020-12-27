@@ -23,7 +23,7 @@ const getCurrentPrice = async (symbol) => {
   // TODO: set update threshold; return our internal price if less than threshold
   const price = await provider.getCurrentPrice(symbol)
   logger.info(`GET current price for ${symbol}: ${price}`)
-  // update price
+  // update price internally
   return price;
 }
 
@@ -39,7 +39,7 @@ const getTimeSeries = async (symbol, options = {}) => {
   const stock = await getStockBySymbol(symbol);
   const ts = await provider.getDailyTimeSeries(symbol)
 
-  console.log('Got time series', ts.length)
+  logger.info(`Got time ${ts.length} series for ${symbol}`)
   const timeSeries = []
 
   // reverse order - start by first
@@ -50,7 +50,6 @@ const getTimeSeries = async (symbol, options = {}) => {
     timeSeries.push(t)
   }
 
-  console.log('Returning filtered time series', timeSeries.length)
   return timeSeries;
 }
 
@@ -73,8 +72,9 @@ const onTradeCreated = async (data) => {
 
     logger.info(`Stocks onTradeCreated handler - trade ID ${trade.id} for ${trade.symbol}`);
 
+    // Get time series when a trade is created. Even if not used here, it'll be cached in Redis for later use.
     const timeSeries = await getTimeSeries(trade.symbol)
-    console.log('onTradeCreated - timeseries length', timeSeries?.length);
+    logger.info('onTradeCreated - timeseries length', timeSeries?.length);
   } catch (err) {
 
   }

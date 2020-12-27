@@ -18,7 +18,6 @@ const getEventManager = () => {
     } else {
       return initEventManager()
     }
-    // throw new Error('EventManager have not been initialized')
 }
 
 export {

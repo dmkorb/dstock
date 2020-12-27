@@ -18,12 +18,13 @@ axiosIntance.interceptors.request.use(
       console.log("Token expired. Trying to refresh.");
       const { access_token } = await authService.refreshToken().catch(() => authService.logout());
       token = access_token;
+      console.log('Refreshed token', { oldToken: token, newToken: access_token })
     }
 
     config.headers = { 
       'Authorization': token ? `Bearer ${token}` : undefined,
       'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/json'
     }
     
     return config;
@@ -31,24 +32,6 @@ axiosIntance.interceptors.request.use(
   error => {
     Promise.reject(error)
 });
-
-// // Response interceptor for API calls
-// axiosIntance.interceptors.response.use((response) => {
-//   return response
-// }, async function (error) {
-//   const originalRequest = error.config;
-//   if (error.response.status === 401 && !originalRequest._retry) {
-//     console.log("Trying to refresh token")
-//     originalRequest._retry = true;
-//     const { access_token } = await authService.refreshToken().catch(() => authService.logout());
-//     // const user = JSON.parse(localStorage.getItem('user'));
-
-//     // console.log("GOT A NEW TOKEN: " + access_token)
-//     // axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
-//     return axiosIntance(originalRequest);
-//   }
-//   return Promise.reject(error);
-// });
 
 const getFunc = (url) => axiosIntance.get(url).then(r => r.data).catch(handleAxiosError);
 const postFunc = (url, data) => axiosIntance.post(url, data).then(r => r.data).catch(handleAxiosError);

@@ -37,6 +37,7 @@
     "react-app-polyfill": "^1.0.1",
     "react-chartjs-2": "^2.7.6",
     "react-currency-formatter": "^1.1.0",
+    "react-currency-input": "^1.3.6",
     "react-dom": "^16.8.6",
     "react-google-autocomplete": "^1.1.0",
     "react-google-places-autocomplete": "^1.3.1",
