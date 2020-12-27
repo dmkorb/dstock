@@ -81,7 +81,7 @@ const getPortfolioPositions = async (portfolioId) => {
   for (let hld of holdings) {
     const holdingPositions = await holdingsService.getUpdatedHoldingPositions(hld.id);
 
-    console.log(`Holding ${hld.symbol} has ${holdingPositions.length} positions`)
+    logger.info(`Holding ${hld.symbol} has ${holdingPositions.length} positions`)
     
     holdingPositions.forEach(pos => {
       let dailyPrtPosition = portflioPositions.find(d => d.date === pos.date);

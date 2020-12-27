@@ -123,7 +123,7 @@ const getUpdatedHoldingPositions = async (holdingId) => {
     }
     const date = t.date;
     const price = t.adjusted_close;
-    const equity = price * position;
+    const equity = Number((price * position).toFixed(2));
     const { gains, performance } = calculateGainAndPerformance(equity, invested, withdrawn);
     
     logger.info(`Position: ${t.date} ${position} shares of ${t.symbol} at $${t.adjusted_close}. Equity ${t.adjusted_close * position}`)

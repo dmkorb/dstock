@@ -1,17 +1,40 @@
 import axios from 'axios';
+import config from '../config/config.js';
 import httpStatus from 'http-status';
 import logger from '../config/logger.js';
 import ApiError from "../utils/ApiError.js";
-import handleAxiosError from '../utils/handleAxiosError.js'
+import handleAxiosError from '../utils/handleAxiosError.js';
 import _ from 'lodash';
 import * as redis from '../libs/redis.js';
 
-const API_KEY = '0YKITDLKRIY84WUZ';
+const API_KEY = config.alphavantageApiKey;
 
 const URLS = {
+  search: term => `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${term}&apikey=${API_KEY}`,
   overview: (symbol) => `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${API_KEY}`,
   quote: (symbol) => `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`,
   dailyTimeSeries: (symbol) => `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${API_KEY}&outputsize=full`
+}
+
+const searchStockSymbols = async (term) => {
+  const queryUrl = URLS.search(term);
+  const cached = await redis.getKey(queryUrl);
+  if (cached) return cached;
+  
+  const startTime = new Date();
+  const response = await axios.get(queryUrl).then(r => r.data).catch(handleAxiosError);
+  const results = []
+  
+  response?.bestMatches?.forEach(match => results.push({
+    symbol: match['1. symbol'],
+    name: match['2. name'],
+    country: match['4. region'],
+    currency: match['8. currency']
+  }))
+
+  logger.info(`Search stock ${term} returned ${results.length} results. Took ${new Date() - startTime}ms`);
+  redis.setKey(queryUrl, results)
+  return results;
 }
 
 /**
@@ -116,6 +139,7 @@ const getDailyTimeSeries = async (symbol) => {
 }
 
 export {
+  searchStockSymbols,
   getCompanyInformation,
   getCurrentPrice,
   getDailyTimeSeries

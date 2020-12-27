@@ -2,9 +2,16 @@ import logger from '../config/logger.js';
 import { EVENTS } from '../constants/index.js';
 import { Stock } from '../models/index.js'
 import * as provider from './alphavantage.service.js';
+import * as twelvedata from './twelvedata.service.js';
 import { getEventManager} from '../libs/event.manager.js';
 
 const em = getEventManager();
+
+const searchStocks = async (term) => {
+  // TODO: create and mantain our own stock objects
+  const data = await provider.searchStockSymbols(term);
+  return data;
+}
 
 const getStockBySymbol = async (symbol) => {
   if (!symbol) throw new Error('No symbol provided');
@@ -23,7 +30,6 @@ const getCurrentPrice = async (symbol) => {
   // TODO: set update threshold; return our internal price if less than threshold
   const price = await provider.getCurrentPrice(symbol)
   logger.info(`GET current price for ${symbol}: ${price}`)
-  // update price internally
   return price;
 }
 
@@ -53,10 +59,17 @@ const getTimeSeries = async (symbol, options = {}) => {
   return timeSeries;
 }
 
+const getBenchmarks = async (startDate) => {
+  const data = await twelvedata.getBenchmarkIndexes(startDate);
+  return data;
+}
+
 export {
+  searchStocks,
   getCurrentPrice,
   getStockBySymbol,
-  getTimeSeries
+  getTimeSeries,
+  getBenchmarks
 }
 
 

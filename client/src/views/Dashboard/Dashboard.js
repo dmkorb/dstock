@@ -10,9 +10,9 @@ import {
 } from 'reactstrap';
 import { CChartLine } from '@coreui/react-chartjs'
 import { Colors } from '../../constants';
-import { portfoliosService } from '../../services/index'
+import { portfoliosService, stocksService } from '../../services/index'
 import { getCurrencyAmount } from '../../helpers/text';
-import { getNPositions } from '../../helpers/charts';
+import { getNPositions, getNElements, getBenchmarksForElements, getFieldFromElements } from '../../helpers/charts';
 import { TradesModal } from '../../containers/TradesModal';
 
 export default class Dashboard extends Component {
@@ -32,9 +32,23 @@ export default class Dashboard extends Component {
 
     portfoliosService.getPortfolios()
       .then(async data => {
+
         // Get detailed portfolio for every ID
         const portfolios = await Promise.all(data.portfolios.map(p => portfoliosService.getPortfolio(p.id)));
         this.setState({ portfolios, loadingPortfolios: false, loadingPositions: true });
+
+        let first_investment = new Date();
+        portfolios.forEach(p => {
+          if (new Date(p.first_investment) < new Date(first_investment)) {
+            first_investment = p.first_investment;
+          }
+        })
+
+        // console.log('Found first investment: ', first_investment)
+        stocksService
+          .getBenchmarks(first_investment)
+          .then(benchmarks => this.setState({ benchmarks }))
+          .catch(() => { })
 
         // Load positions asynchronously
         const positions = await Promise.all(data.portfolios.map(p => portfoliosService.getPortfolioPositions(p.id)))
@@ -46,48 +60,99 @@ export default class Dashboard extends Component {
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   renderPositionsForPortfolio = (portfolioId) => {
-    let { positions } = this.state;
+    let { positions, benchmarks } = this.state;
     if (!positions) return (<><br></br><p>Loading positions...</p></>);
 
     const portfolioPosition = positions?.find(p => p.id === portfolioId);
     if (!portfolioPosition) return (<><br></br><p>Did not found positions for this portfolio</p></>);
     const points = 100;
 
+    const filteredPositions = getNElements(portfolioPosition.positions, points);
+    const filteredBenchmarks = getBenchmarksForElements(filteredPositions, benchmarks);
+
     return (
-      <Card>
-        <CardHeader className="justify-center">Performance
-          <div className="card-header-actions">
-            <Button
-              style={{ backgroundColor: Colors.brandRed, color: Colors.brandWhite, fontWeight: 'bold' }}
-              onClick={(e => this.setState({ showModal: true }))}
-            >Add trade</Button>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <CChartLine
-            style={{ height: 400 }}
-            datasets={[
-              {
-                label: 'Gains',
-                backgroundColor: Colors.brandBlack + '55',
-                data: getNPositions(portfolioPosition.positions, points, 'gains')
-              },
-              {
-                label: 'Equity',
-                backgroundColor: Colors.brandGreen,
-                data: getNPositions(portfolioPosition.positions, points, 'equity')
-              },
-            ]}
-            options={{
-              tooltips: {
-                enabled: true
-              },
-              maintainAspectRatio: false,
-            }}
-            labels={getNPositions(portfolioPosition.positions, points, 'date')}
-          />
-        </CardBody>
-      </Card>
+      <Row>
+        <Col xs="12" md="6">
+          <Card>
+            <CardHeader className="justify-center">
+              Portfolio holdings
+            </CardHeader>
+            <CardBody>
+              <CChartLine
+                style={{ height: 400 }}
+                datasets={[
+                  {
+                    label: 'Gains',
+                    backgroundColor: Colors.brandBlack + '55',
+                    data: getFieldFromElements(filteredPositions, 'gains')
+                  },
+                  {
+                    label: 'Equity',
+                    backgroundColor: Colors.brandGreen,
+                    data: getFieldFromElements(filteredPositions, 'equity')
+                  },
+                ]}
+                options={{
+                  tooltips: {
+                    enabled: true
+                  },
+                  maintainAspectRatio: false,
+                }}
+                labels={getFieldFromElements(filteredPositions, 'date')}
+              />
+            </CardBody>
+          </Card>
+        </Col>
+        <Col xs="12" md="6">
+          <Card>
+            <CardHeader className="justify-center">
+              Performance
+              <div className="card-header-actions">
+                <Button
+                  style={{ backgroundColor: Colors.brandRed, color: Colors.brandWhite, fontWeight: 'bold' }}
+                  onClick={(e => this.setState({ showModal: true }))}
+                >Add trade</Button>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <CChartLine
+                style={{ height: 400 }}
+                datasets={[
+                  {
+                    label: 'My performance',
+                    backgroundColor: Colors.brandGreen,
+                    data: getFieldFromElements(filteredPositions, 'performance')
+                  },
+                  {
+                    label: 'S&P500',
+                    backgroundColor: Colors.brandRed,
+                    data: getFieldFromElements(filteredBenchmarks.gspc, 'performance')
+                  },
+
+                  {
+                    label: 'Dow Jones',
+                    backgroundColor: 'rgb(99, 194, 222)',
+                    data: getFieldFromElements(filteredBenchmarks.dji, 'performance')
+                  },
+                  {
+                    label: 'NASDAQ',
+                    backgroundColor: 'rgb(255, 193, 7)',
+                    data: getFieldFromElements(filteredBenchmarks.ixic, 'performance')
+                  },
+                ]}
+                options={{
+                  tooltips: {
+                    enabled: true
+                  },
+                  maintainAspectRatio: false,
+                }}
+                labels={getFieldFromElements(filteredPositions, 'date')}
+              />
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+
     )
   }
 
@@ -187,14 +252,14 @@ export default class Dashboard extends Component {
         </div>
         )
 
-      )}
-        <TradesModal 
-          show={showModal} 
-          onClose={() => this.setState({ showModal: false })} 
+        )}
+        <TradesModal
+          show={showModal}
+          onClose={() => this.setState({ showModal: false })}
           onTradeCreated={() => {
             this.setState({ showModal: false })
             this.getData()
-          }} 
+          }}
         />
       </div>
     );

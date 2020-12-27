@@ -5,7 +5,7 @@ export const calculateGainAndPerformance = (equity, invested, withdrawn) => {
   let gains = 0;
   if (invested > 0) {
     gains = (equity + withdrawn - invested);
-    performance = (gains / invested) * 100
+    performance = Number(((gains / invested) * 100).toFixed(2));
   }
   return { gains, performance };
 }

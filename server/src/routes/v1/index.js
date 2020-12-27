@@ -4,7 +4,8 @@ import {
   tradeController, 
   holdingsController, 
   authController,
-  usersController 
+  usersController, 
+  stocksController
 } from '../../controllers/index.js';
 import { auth, isAdmin } from '../../middleware/auth.js';
 import { portfolioValidator, tradeValidator, authValidator, userValidator } from '../../validators/index.js';
@@ -54,5 +55,11 @@ router.get('/trades', auth.required, validate(tradeValidator.getTrades), tradeCo
 router.post('/trades', auth.required, validate(tradeValidator.createTrade), tradeController.createTrade);
 router.put('/trades/:id', auth.required, validate(tradeValidator.updateTrade), tradeController.updateTrade);
 router.delete('/trades/:id', auth.required, validate(tradeValidator.removeTrade), tradeController.removeTrade);
+
+/**
+ * Stocks
+ */
+router.get('/stocks', stocksController.getStocks)
+router.get('/benchmarks', stocksController.getBenchmarks)
 
 export default router;

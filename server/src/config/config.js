@@ -12,7 +12,9 @@ const envVarsSchema = Joi.object()
     JWT_SECRET: Joi.string().required().description('JWT secret key'),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
     JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh tokens expire'),
-    REDIS_URL: Joi.string().required().description('Redis URL')
+    REDIS_URL: Joi.string().required().description('Redis URL'),
+    ALPHAVANTAGE_API_KEY: Joi.string().required().description('Alphaadvantage API key'),
+    TWELVEDATA_API_KEY: Joi.string().required().description('Twelvedata API key'),
   })
   .unknown();
 
@@ -42,5 +44,7 @@ export default {
   },
   redis: {
     url: envVars.REDIS_URL,
-  }
+  },
+  alphavantageApiKey: envVars.ALPHAVANTAGE_API_KEY,
+  twelvedataApiKey: envVars.TWELVEDATA_API_KEY
 };
