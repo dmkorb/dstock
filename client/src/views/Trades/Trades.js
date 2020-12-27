@@ -82,7 +82,7 @@ export default class Trades extends Component {
                         <td>{trade.name}</td>
                         
                         <td>
-                          <span class={`badge badge-${getBadgeColor(trade.trade_type)}`}>
+                          <span className={`badge badge-${getBadgeColor(trade.trade_type)}`}>
                           {String(trade.trade_type).toUpperCase()}
                           </span>
                         </td>

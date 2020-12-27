@@ -15,10 +15,8 @@ axiosIntance.interceptors.request.use(
     let currentDate = new Date();
 
     if (decodedToken.exp * 1000 < currentDate.getTime()) {
-      console.log("Token expired. Trying to refresh.");
-      const { access_token } = await authService.refreshToken().catch(() => authService.logout());
-      token = access_token;
-      console.log('Refreshed token', { oldToken: token, newToken: access_token })
+      const tokens = await authService.refreshToken().catch(() => authService.logout());
+      token = tokens.access_token;
     }
 
     config.headers = { 

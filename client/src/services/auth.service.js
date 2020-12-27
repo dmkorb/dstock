@@ -50,7 +50,11 @@ const logout = async () => {
 const refreshToken = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) return;
-    const tokens = await axios.post(URLS.REFRESH_TOKENS, { refresh_token: user.refresh_token }).catch(handleAxiosError)
+    const tokens = await axios
+        .post(URLS.REFRESH_TOKENS, { refresh_token: user.refresh_token })
+        .then(r => r.data)
+        .catch(handleAxiosError)
+
     localStorage.setItem('user', JSON.stringify({ ...user, ...tokens }));
     return tokens;
 }
