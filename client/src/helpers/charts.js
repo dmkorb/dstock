@@ -25,9 +25,9 @@ export const getBenchmarksForElements = (positions, benchmarks) => {
   if (!positions || !benchmarks) return { gspc, dji, ixic };
 
   positions.forEach(pos => {
-    gspc.push(benchmarks.gspc.find(b => b.date >= pos.date))
-    dji.push(benchmarks.dji.find(b => b.date >= pos.date))
-    ixic.push(benchmarks.ixic.find(b => b.date >= pos.date))
+    if (benchmarks.gspc) gspc.push(benchmarks.gspc.find(b => b.date >= pos.date))
+    if (benchmarks.dji) dji.push(benchmarks.dji.find(b => b.date >= pos.date))
+    if (benchmarks.ixic) ixic.push(benchmarks.ixic.find(b => b.date >= pos.date))
   })
   return { gspc, dji, ixic };
 }

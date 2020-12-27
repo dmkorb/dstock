@@ -48,6 +48,14 @@ export default class Trades extends Component {
       <Row>
         <Col xl={12}>
           {loading && (<><br></br><p>Loading...</p></>)}
+
+            {!trades?.length &&
+              <Button
+                style={{ backgroundColor: Colors.brandRed, color: Colors.brandWhite, fontWeight: 'bold' }}
+                onClick={(e => this.setState({ showModal: true }))}
+              >Add trade</Button>
+            }
+
           {!!trades?.length && <Card>
               <CardHeader>
                 Trades

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import { Colors } from '../../constants';
 import { getCurrencyAmount } from '../../helpers/text';
 import { getNPositions } from '../../helpers/charts';
 import { holdingsService } from '../../services/index';
 import { CChartLine } from '@coreui/react-chartjs'
+import { TradesModal } from '../../containers/TradesModal';
 
 export default class Holdings extends Component {
   state = {
@@ -26,12 +27,19 @@ export default class Holdings extends Component {
   }
 
   render() {
-    const { holdings, loading } = this.state;
+    const { holdings, loading, showModal } = this.state;
 
     return (
       <Row>
         <Col xl={12}>
           {loading && (<><br></br><p>Loading...</p></>)}
+
+          {!holdings?.length &&
+            <Button
+              style={{ backgroundColor: Colors.brandRed, color: Colors.brandWhite, fontWeight: 'bold' }}
+              onClick={(e => this.setState({ showModal: true }))}
+            >Add trade</Button>
+          }
 
           {!!holdings?.length && <Row>
             {holdings.map((holding, idx) => {
@@ -78,6 +86,15 @@ export default class Holdings extends Component {
             })}
           </Row>}
         </Col>
+
+        <TradesModal
+          show={showModal} 
+          onClose={() => this.setState({ showModal: false })} 
+          onTradeCreated={() => {
+            this.setState({ showModal: false })
+            this.getData()
+          }} 
+        />
       </Row>
     )
   }
