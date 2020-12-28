@@ -1,7 +1,7 @@
 ![dstock.](https://github.com/dmkorb/dstock/blob/main/logo.png?raw=true)
 
 
-Track all your stocks portfolio in one place. 
+Track all your stock portfolios in one place. 
 
 
 ## Getting Started
