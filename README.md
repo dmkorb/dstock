@@ -3,6 +3,7 @@
 
 Track all your stock portfolios in one place. 
 
+A live demo can be found [here](https://dstock.dmkorb.com/)
 
 ## Getting Started
 
