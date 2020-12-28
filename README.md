@@ -12,7 +12,7 @@ Clone the repo:
 
 ```bash
 git clone https://github.com/dmkorb/dstock.git
-cd dstock
+cd dstock/server
 ```
 
 Set the environment variables:
@@ -39,12 +39,19 @@ chmod +x start.sh
 Running locally with hot-reload:
 
 ```bash
+cd server
 yarn run dev
+
+cd ../client
+yarn start
 ```
 
 Running in production mode:
 
 ```bash
+cd client
+yarn build
+cd ../server
 yarn start
 ```
 
