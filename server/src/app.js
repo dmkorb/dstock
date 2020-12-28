@@ -4,6 +4,7 @@ import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
 import cors from "cors";
+import path from "path";
 import passport from "passport";
 import httpStatus from "http-status";
 import config from "./config/config.js";
@@ -13,6 +14,8 @@ import routesAdmin from "./routes/admin/index.js";
 import { jwtStrategy } from './config/passport.js';
 import { errorConverter, errorHandler } from "./middleware/error.js";
 import ApiError from "./utils/ApiError.js";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const app = express();
 
@@ -46,14 +49,19 @@ app.options("*", cors());
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
-// limit repeated failed requests to auth endpoints
-// if (config.env === 'production') {
-//   app.use('/v1/auth', authLimiter);
-// }
 
 // v1 api routes
 app.use("/v1", routesV1);
 app.use("/admin", routesAdmin);
+
+// add client app
+if (config.env === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')))
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  })
+}
+
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+    redis:
+        image: redis:6
+        restart: always
+        ports:
+          - 6379:6379
+        networks: 
+          - deps
+    
+    mongo:
+      image: mongo
+      ports: 
+        - 27017:27017
+      volumes: ~/mongo/data:/data/db
+      logging:
+        driver: "none"
+      networks: 
+          - deps
+
+networks:
+  deps:
+    driver: bridge
