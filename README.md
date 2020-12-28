@@ -1,4 +1,4 @@
-![dstock.](https://github.com/dmkorb/dstock/blob/main/client/src/assets/img/brand/logo.png?raw=true)
+![dstock.](https://github.com/dmkorb/dstock/blob/main/logo.png?raw=true)
 
 
 Track all your stocks portfolio in one place. 
