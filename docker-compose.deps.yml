@@ -13,7 +13,8 @@ services:
       image: mongo
       ports: 
         - 27017:27017
-      volumes: ~/mongo/data:/data/db
+      volumes:
+        - './data:/data/db'
       logging:
         driver: "none"
       networks: 
