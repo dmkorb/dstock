@@ -12,7 +12,7 @@ const URLS = {
     return url;
   }
 }
-
+ 
 const getObjectFromValue = (v, referenceValue) => {
   let variation = Number((((v.close - v.open) / v.open) * 100).toFixed(2))
   let performance = referenceValue > 0 

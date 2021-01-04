@@ -193,7 +193,7 @@ export class TradesModal extends Component {
 
           </Form>
           {!!amount && <p>Estimated amount: {getCurrencyAmount(amount)}</p>}
-          {error && <div class="alert alert-danger" role="alert">{error}</div>}
+          {error && <div className="alert alert-danger" role="alert">{error}</div>}
         </ModalBody>
         <ModalFooter>
           <Button color="secondary outline" onClick={onClose}>Cancel</Button>

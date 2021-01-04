@@ -128,7 +128,7 @@ export default class Register extends Component {
                       <p className="help-block">Password is required</p>
                     }
 
-                    {errorMessage && <div class="alert alert-danger" role="alert">{errorMessage}</div>}
+                    {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}
 
                     <Row>
                       <Col xs="6">

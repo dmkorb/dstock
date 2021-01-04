@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  redis:
+    image: redis:6
+    restart: always
+    ports:
+      - 6379:6379
+    networks: 
+      - proxy-net
+  
+  mongo:
+    image: mongo
+    ports: 
+      - 27017:27017
+    volumes:
+      - './data:/data/db'
+    logging:
+      driver: "none"
+    networks: 
+      - proxy-net
+
+  app:
+    container_name: dstock
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    networks:
+      # - deps
+      # - app
+      - proxy-net
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/dstock
+      - JWT_SECRET=dstockFkngScrt
+      - REDIS_URL=redis://redis
+      - ALPHAVANTAGE_API_KEY=0YKITDLKRIY84WUZ
+      - TWELVEDATA_API_KEY=970a8c2e37044bfb82fe15f53f8ae7e7
+    labels:
+      - traefik.frontend.rule=Host:dstock.dmkorb.com
+      - traefik.docker.network:proxy-net
+      - traefik.port=4000
+      - traefik.enable=true
+
+networks:
+  # deps:
+  #   external: true
+  proxy-net:
+    external: true
+  # app:
+  #   driver: bridge
+  
