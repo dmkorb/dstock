@@ -3,7 +3,7 @@ import { EVENTS } from '../constants/index.js';
 import { Stock } from '../models/index.js'
 import * as provider from './alphavantage.service.js';
 import * as twelvedata from './twelvedata.service.js';
-import { getEventManager} from '../libs/event.manager.js';
+import { getEventManager} from '../events/event.manager.js';
 
 const em = getEventManager();
 

@@ -3,7 +3,7 @@ import { TRADE_TYPES, EVENTS } from '../constants/index.js';
 import { Trade } from "../models/index.js"
 import ApiError from "../utils/ApiError.js";
 import logger from '../config/logger.js';
-import { getEventManager } from '../libs/event.manager.js';
+import { getEventManager } from '../events/event.manager.js';
 import * as stocks from './stocks.service.js';
 
 const em = getEventManager();
