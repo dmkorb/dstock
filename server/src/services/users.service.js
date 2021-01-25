@@ -2,7 +2,7 @@ import httpStatus from 'http-status';
 import { User } from '../models/index.js';
 import ApiError from '../utils/ApiError.js';
 import { EVENTS } from '../constants/index.js';
-import { getEventManager } from '../libs/event.manager.js';
+import { getEventManager } from '../events/event.manager.js';
 
 const em = getEventManager();
 

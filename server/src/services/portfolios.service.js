@@ -4,7 +4,7 @@ import ApiError from "../utils/ApiError.js";
 import { Portfolio } from "../models/index.js"
 import { EVENTS } from '../constants/index.js';
 import * as holdingsService from "./holdings.service.js";
-import { getEventManager} from '../libs/event.manager.js';
+import { getEventManager} from '../events/event.manager.js';
 import { calculateGainAndPerformance } from '../utils/calculators.js';
 
 const em = getEventManager();
@@ -142,68 +142,3 @@ export {
   removePortfolioById,
   getPortfolioPositions
 }
-
-/**
- * Event handlers
- */
-// const onHoldingPositionsUpdated = async ({ holding }) => {
-//   try {
-//     logger.info(`Portfolios onHoldingPositionsUpdated handler - holding ID ${holding.id}`);
-//     const portfolio = await getPortfolioById(holding.portfolio_id);
-//     const holdings = await holdingsService.getHoldingsForPortfolioId(holding.portfolio_id);
-//     console.log(`Found ${holdings.length} holdings for portfolio ${holding.portfolio_id}`);
-
-//     const portoflioPositions = []
-//     for (let hld of holdings) {
-//       hld.positions.forEach(pos => {
-//         let dailyPrtPosition = portfolio.positions.find(d => d.date === pos.date);
-//         console.log('dailyPrtPosition before', dailyPrtPosition);
-//         if (dailyPrtPosition) {
-//           dailyPrtPosition.equity += pos.equity;
-//           dailyPrtPosition.invested += pos.invested;
-//           dailyPrtPosition.withdrawn += pos.withdrawn;
-//         } else {
-//           dailyPrtPosition = {
-//             date: pos.date,
-//             equity: pos.equity,
-//             invested: pos.invested,
-//             withdrawn: pos.withdrawn
-//           }
-//         } 
-
-//         const { gains, performance } = calculateGainAndPerformance(
-//           dailyPrtPosition.equity, 
-//           dailyPrtPosition.invested,
-//           dailyPrtPosition.withdrawn)
-        
-//         dailyPrtPosition.gains = gains;
-//         dailyPrtPosition.performance = performance;
-
-//         console.log('dailyPrtPosition after', dailyPrtPosition);
-
-//         portoflioPositions.push(dailyPrtPosition)
-//       })
-//     }
-
-//     // console.log('Portfolio positions:', portoflioPositions)
-//     await updatePortfolioById(portfolio.id, { positions: portoflioPositions })
-//   } catch (err) {
-//     logger.error(err);
-//   }
-// }
-
-const onUserCreatedEvent = async ({ user }) => {
-  try {
-    logger.info(`Portfolios service - onUserCreatedEvent handler - user ID ${user.id}`);
-    const portfolio = await createPortfolio({name: `${user.name}'s portfolio`, user_id: user.id});
-    logger.info(`Portfolios service - created portfolio ${portfolio.id} for user ${user.name} (${user.id})`);
-  } catch (err) {
-    logger.error(err);
-  }
-}
-
-/**
- * Event listners
- */
-// em.on(EVENTS.HOLDING.HOLDING_POSITIONS_UPDATED, onHoldingPositionsUpdated)
-em.on(EVENTS.USER.USER_CREATED, onUserCreatedEvent)
